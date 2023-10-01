@@ -4,7 +4,12 @@ use vulkano::instance::{Instance, InstanceCreateInfo};
 use vulkano::device::QueueFlags;
 use vulkano::device::{Device,DeviceCreateInfo,QueueCreateInfo};
 use vulkano::device::physical::PhysicalDevice;
+use vulkano::memory::allocator::StandardMemoryAllocator;
+use vulkano::memory::allocator::{AllocationCreateInfo,MemoryUsage};
+use vulkano::buffer::{Buffer,BufferCreateInfo,BufferUsage};
 use core::default::Default;
+use vulkano::swapchain::FullScreenExclusive::Default as OtherDefault;
+
 
 
 fn main() {
@@ -43,6 +48,26 @@ let physicaldevice=instance.enumerate_physical_devices().expect("device not crea
 
     let queue=queues.next().unwrap();
 
-    println!("{:?}",queue);
+    //now device and queue is both available
+
+    //cretae a memory alloc using stand memory alloc lib
+    let memory_allocator=StandardMemoryAllocator::new_default(device.clone());
+
+    let data:i32=12;
+    let buffer=Buffer::from_data(
+        &memory_allocator,
+        BufferCreateInfo {
+            usage:BufferUsage::UNIFORM_BUFFER,
+            ..Default::default()
+        },
+        AllocationCreateInfo {
+            usage:MemoryUsage::Upload,
+            ..Default::default()
+        },
+        data,
+    )
+        .expect("failed to create buffer");
+
+
 
 }
